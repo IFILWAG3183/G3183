@@ -1,12 +1,12 @@
-fetch("https://raw.githubusercontent.com/IFILWAG3183/G3183/main/log.json")
+
+fetch('log.json')
   .then(res => res.json())
   .then(logs => {
-    const container = document.getElementById("log-container");
-    container.innerHTML = "";
+    const container = document.getElementById('log-container');
     logs.forEach(entry => {
-      const div = document.createElement("div");
-      div.className = "entry";
-      div.innerHTML = `<span style="color:${entry.color}">[${entry.timestamp}] ${entry.text}</span>`;
+      const div = document.createElement('div');
+      div.className = 'entry';
+      div.innerText = entry;
       container.appendChild(div);
     });
   });

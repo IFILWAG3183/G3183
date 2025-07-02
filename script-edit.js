@@ -1,3 +1,4 @@
+
 const input = document.getElementById('log-input');
 const container = document.getElementById('log-container');
 const colorPicker = document.getElementById('colorPicker');
@@ -5,7 +6,9 @@ const logs = [];
 
 function formatDateTime(date) {
   const pad = n => String(n).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  const d = `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
+  const t = `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  return `${d} ${t}`;
 }
 
 function addLog() {
@@ -16,12 +19,10 @@ function addLog() {
   const color = colorPicker.value;
   const entryText = `${dateTime} ${text}`;
   logs.push(entryText);
-
   const div = document.createElement('div');
   div.className = 'entry';
   div.innerHTML = `<span style="color:${color}">${entryText}</span>`;
   container.appendChild(div);
-
   input.value = '';
   input.focus();
 }
