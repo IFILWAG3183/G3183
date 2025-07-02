@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
-
 body {
   font-family: 'VT323', monospace;
   background-color: #1e1e1e;
@@ -10,12 +9,10 @@ body {
   font-size: 20px;
   line-height: 1.6;
 }
-
 h1 {
   text-align: center;
   color: #00c3ff;
 }
-
 textarea {
   width: 100%;
   height: 80px;
@@ -26,9 +23,7 @@ textarea {
   font-size: 18px;
   border-radius: 10px;
   resize: none;
-  font-family: 'VT323', monospace;
 }
-
 .entry {
   background: #2d2d2d;
   margin-top: 1rem;
@@ -37,7 +32,6 @@ textarea {
   border-radius: 10px;
   white-space: pre-wrap;
 }
-
 button, select {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
@@ -45,12 +39,10 @@ button, select {
   color: #000;
   border: none;
   border-radius: 10px;
-  font-family: 'VT323', monospace;
   font-size: 18px;
   cursor: pointer;
   margin-right: 1rem;
 }
-
 button:hover, select:hover {
   background: #00a8d6;
 }

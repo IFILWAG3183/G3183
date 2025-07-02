@@ -2,42 +2,68 @@
 const input = document.getElementById('log-input');
 const container = document.getElementById('log-container');
 const colorPicker = document.getElementById('colorPicker');
-const logs = [];
+const repo = localStorage.getItem('gh-repo');
+const user = localStorage.getItem('gh-user');
+const token = localStorage.getItem('gh-token');
+const email = localStorage.getItem('gh-email');
+let logs = [];
 
 function formatDateTime(date) {
   const pad = n => String(n).padStart(2, '0');
-  const d = `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
-  const t = `${pad(date.getHours())}:${pad(date.getMinutes())}`;
-  return `${d} ${t}`;
+  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function loadLogs() {
+  fetch('log.json')
+    .then(r => r.json())
+    .then(data => {
+      logs = data;
+      data.forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'entry';
+        div.innerText = entry;
+        container.appendChild(div);
+      });
+    });
 }
 
 function addLog() {
   const text = input.value.trim();
   if (!text) return;
-  const now = new Date();
-  const dateTime = formatDateTime(now);
-  const color = colorPicker.value;
-  const entryText = `${dateTime} ${text}`;
-  logs.push(entryText);
+  const time = formatDateTime(new Date());
+  const entry = `${time} ${text}`;
+  logs.push(entry);
+
   const div = document.createElement('div');
   div.className = 'entry';
-  div.innerHTML = `<span style="color:${color}">${entryText}</span>`;
+  div.innerHTML = `<span style="color:${colorPicker.value}">${entry}</span>`;
   container.appendChild(div);
   input.value = '';
-  input.focus();
+
+  const content = JSON.stringify(logs, null, 2);
+  const encoded = btoa(unescape(encodeURIComponent(content)));
+  fetch(`https://api.github.com/repos/${user}/${repo}/contents/log.json`, {
+    method: "PUT",
+    headers: {
+      "Authorization": "token " + token,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: "update log",
+      content: encoded,
+      sha: null
+    })
+  }).then(res => res.json()).then(resp => {
+    if (resp.commit) console.log("日志已保存");
+    else console.error("失败", resp);
+  });
 }
 
 function exportLog() {
-  if (logs.length === 0) {
-    alert('没有日志内容可以导出。');
-    return;
-  }
-  const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
+  const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
-  const date = new Date().toISOString().slice(0, 10);
-  a.href = url;
-  a.download = `日志_${date}.json`;
+  a.href = URL.createObjectURL(blob);
+  a.download = 'log.json';
   a.click();
-  URL.revokeObjectURL(url);
 }
+window.onload = loadLogs;
