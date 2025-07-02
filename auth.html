@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>GitHub 设置</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>🔐 GitHub 设置</h1>
+  <p>以下信息仅保存在本地浏览器，用于日志同步。</p>
+  <label>GitHub 用户名：<input id="gh-user" /></label><br>
+  <label>仓库名称：<input id="gh-repo" /></label><br>
+  <label>你的邮箱（Git 提交用）：<input id="gh-email" /></label><br>
+  <label>GitHub Token：<input id="gh-token" type="password" /></label><br>
+  <button onclick="saveConfig()">💾 保存设置</button>
+  <script>
+    function saveConfig() {
+      localStorage.setItem("gh-user", document.getElementById("gh-user").value);
+      localStorage.setItem("gh-repo", document.getElementById("gh-repo").value);
+      localStorage.setItem("gh-email", document.getElementById("gh-email").value);
+      localStorage.setItem("gh-token", document.getElementById("gh-token").value);
+      alert("已保存！");
+    }
+  </script>
+</body>
+</html>

@@ -1,46 +1,61 @@
-
-const input = document.getElementById('log-input');
-const colorPicker = document.getElementById('colorPicker');
-const container = document.getElementById('log-container');
-const entries = JSON.parse(localStorage.getItem("logEntries") || "[]");
-
-window.onload = function () {
-  entries.forEach(entry => addToDOM(entry));
-};
-
-function formatDateTime(date) {
-  const pad = n => String(n).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+function getConfig() {
+  return {
+    token: localStorage.getItem("gh-token"),
+    username: localStorage.getItem("gh-user"),
+    repo: localStorage.getItem("gh-repo"),
+    email: localStorage.getItem("gh-email")
+  };
 }
 
-function addLog() {
+async function addLog() {
+  const input = document.getElementById('log-input');
+  const color = document.getElementById('colorPicker').value;
   const text = input.value.trim();
   if (!text) return;
+
   const now = new Date();
-  const entry = {
-    datetime: formatDateTime(now),
-    text,
-    color: colorPicker.value
+  const timestamp = now.toISOString().replace("T", " ").slice(0, 16);
+  const entry = { timestamp, text, color };
+
+  const config = getConfig();
+  const apiUrl = `https://api.github.com/repos/${config.username}/${config.repo}/contents/log.json`;
+
+  let logs = [];
+  let sha = "";
+
+  // 获取原始文件
+  try {
+    const res = await fetch(apiUrl, {
+      headers: { Authorization: `token ${config.token}` }
+    });
+    const data = await res.json();
+    logs = JSON.parse(atob(data.content));
+    sha = data.sha;
+  } catch (e) {
+    logs = [];
+  }
+
+  logs.push(entry);
+  const body = {
+    message: "update log",
+    committer: { name: config.username, email: config.email },
+    content: btoa(JSON.stringify(logs, null, 2)),
+    sha: sha || undefined
   };
-  entries.push(entry);
-  localStorage.setItem("logEntries", JSON.stringify(entries));
-  addToDOM(entry);
-  input.value = '';
-}
 
-function addToDOM(entry) {
-  const div = document.createElement('div');
-  div.className = 'entry';
-  div.innerHTML = `<span class="timestamp">${entry.datetime}</span><span style="color:${entry.color}">${entry.text}</span>`;
-  container.appendChild(div);
-}
+  const res = await fetch(apiUrl, {
+    method: "PUT",
+    headers: {
+      Authorization: `token ${config.token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+  });
 
-function exportLog() {
-  const blob = new Blob([JSON.stringify(entries, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = "log.json";
-  a.click();
-  URL.revokeObjectURL(url);
+  if (res.ok) {
+    alert("已上传！");
+    input.value = '';
+  } else {
+    alert("上传失败");
+  }
 }
