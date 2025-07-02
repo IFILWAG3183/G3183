@@ -2,9 +2,24 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0;url=view.html">
-  <title>开发者日志 👾</title>
+  <title>👾 开发者日志</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <h1>👾 开发者日志</h1>
+  <textarea id="log-input" placeholder="输入日志内容..."></textarea><br>
+  <label for="colorPicker">🖌 字体颜色：</label>
+  <select id="colorPicker">
+    <option value="#ffffff">白色</option>
+    <option value="#00ffcc">青绿色</option>
+    <option value="#ffd700">金黄色</option>
+    <option value="#ff8888">淡红色</option>
+    <option value="#87cefa">天蓝色</option>
+    <option value="#eeeeee">灰白色</option>
+  </select>
+  <button onclick="addLog()">➕ 添加日志</button>
+  <button onclick="exportLog()">📤 导出 JSON</button>
+  <div id="log-container"></div>
+  <script src="script-edit.js"></script>
 </body>
 </html>

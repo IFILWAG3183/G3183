@@ -1,28 +1,37 @@
 body {
-  background: #1e1e1e;
+  background-color: #1e1e1e;
   color: #f0f0f0;
   font-family: 'Courier New', monospace;
-  padding: 2rem;
   max-width: 720px;
-  margin: auto;
+  margin: 3rem auto;
+  padding: 1rem;
 }
 textarea {
   width: 100%;
-  height: 80px;
+  height: 100px;
   background: #2a2a2a;
   color: #fff;
-  font-size: 16px;
+  border: none;
   padding: 10px;
-  margin: 10px 0;
-}
-select, button, input {
-  padding: 5px 10px;
-  margin: 5px;
-  border-radius: 6px;
+  margin-top: 10px;
+  border-radius: 10px;
+  font-size: 16px;
 }
 .entry {
+  background: #2d2d2d;
   margin-top: 1rem;
   padding: 10px;
-  background: #2d2d2d;
   border-left: 4px solid #00c3ff;
+  border-radius: 6px;
+}
+button, select {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: #00c3ff;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 1rem;
 }

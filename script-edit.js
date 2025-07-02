@@ -1,61 +1,42 @@
-function getConfig() {
-  return {
-    token: localStorage.getItem("gh-token"),
-    username: localStorage.getItem("gh-user"),
-    repo: localStorage.getItem("gh-repo"),
-    email: localStorage.getItem("gh-email")
-  };
+const input = document.getElementById('log-input');
+const container = document.getElementById('log-container');
+const colorPicker = document.getElementById('colorPicker');
+const logs = [];
+
+function formatDateTime(date) {
+  const pad = n => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-async function addLog() {
-  const input = document.getElementById('log-input');
-  const color = document.getElementById('colorPicker').value;
+function addLog() {
   const text = input.value.trim();
   if (!text) return;
-
   const now = new Date();
-  const timestamp = now.toISOString().replace("T", " ").slice(0, 16);
-  const entry = { timestamp, text, color };
+  const dateTime = formatDateTime(now);
+  const color = colorPicker.value;
+  const entryText = `${dateTime} ${text}`;
+  logs.push(entryText);
 
-  const config = getConfig();
-  const apiUrl = `https://api.github.com/repos/${config.username}/${config.repo}/contents/log.json`;
+  const div = document.createElement('div');
+  div.className = 'entry';
+  div.innerHTML = `<span style="color:${color}">${entryText}</span>`;
+  container.appendChild(div);
 
-  let logs = [];
-  let sha = "";
+  input.value = '';
+  input.focus();
+}
 
-  // 获取原始文件
-  try {
-    const res = await fetch(apiUrl, {
-      headers: { Authorization: `token ${config.token}` }
-    });
-    const data = await res.json();
-    logs = JSON.parse(atob(data.content));
-    sha = data.sha;
-  } catch (e) {
-    logs = [];
+function exportLog() {
+  if (logs.length === 0) {
+    alert('没有日志内容可以导出。');
+    return;
   }
-
-  logs.push(entry);
-  const body = {
-    message: "update log",
-    committer: { name: config.username, email: config.email },
-    content: btoa(JSON.stringify(logs, null, 2)),
-    sha: sha || undefined
-  };
-
-  const res = await fetch(apiUrl, {
-    method: "PUT",
-    headers: {
-      Authorization: `token ${config.token}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(body)
-  });
-
-  if (res.ok) {
-    alert("已上传！");
-    input.value = '';
-  } else {
-    alert("上传失败");
-  }
+  const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `日志_${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
